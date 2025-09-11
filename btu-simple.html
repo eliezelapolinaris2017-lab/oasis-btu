@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calculadora BTU – Simple</title>
+<style>
+  body{font-family:Arial, sans-serif;background:#0f172a;color:#e5e7eb;margin:0;padding:20px}
+  h1{text-align:center;font-size:20px}
+  .card{background:#111827;padding:16px;border-radius:12px;max-width:420px;margin:20px auto;box-shadow:0 6px 20px rgba(0,0,0,.25)}
+  label{display:block;margin-top:10px;font-size:14px}
+  input,select,button{width:100%;padding:10px;margin-top:5px;border-radius:8px;border:1px solid #374151;background:#0b1220;color:#e5e7eb}
+  button{background:#22c55e;color:#0b1220;font-weight:bold;cursor:pointer}
+  .result{font-size:22px;font-weight:bold;margin-top:15px;text-align:center}
+  .hint{color:#9ca3af;font-size:12px;text-align:center;margin-top:8px}
+</style>
+</head>
+<body>
+<h1>Calculadora de BTU</h1>
+<div class="card">
+  <label>Ancho (ft)</label>
+  <input type="number" id="ancho" value="12" step="0.1">
+
+  <label>Largo (ft)</label>
+  <input type="number" id="largo" value="12" step="0.1">
+
+  <label>Alto (ft)</label>
+  <input type="number" id="alto" value="8" step="0.1">
+
+  <label>BTU por pie cuadrado</label>
+  <select id="btufactor">
+    <option value="25">25 BTU/ft² (estándar)</option>
+    <option value="30" selected>30 BTU/ft² (PR)</option>
+    <option value="35">35 BTU/ft² (alta exigencia)</option>
+  </select>
+
+  <button onclick="calcular()">Calcular</button>
+
+  <div class="result" id="resultado">—</div>
+  <div class="hint">Fórmula: ancho × largo × (alto/8) × BTU/ft²</div>
+</div>
+
+<script>
+function calcular(){
+  const ancho = parseFloat(document.getElementById('ancho').value) || 0;
+  const largo = parseFloat(document.getElementById('largo').value) || 0;
+  const alto  = parseFloat(document.getElementById('alto').value)  || 8;
+  const factor= parseFloat(document.getElementById('btufactor').value);
+
+  const area = ancho * largo;
+  const ajusteAltura = alto / 8;
+  const btu = Math.round(area * factor * ajusteAltura);
+
+  document.getElementById('resultado').innerText =
+    `Área: ${area.toFixed(1)} ft² · Altura: ${alto} ft · Estimado: ${btu.toLocaleString('en-US')} BTU/h`;
+}
+</script>
+</body>
+</html>
