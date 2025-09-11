@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Calculadora de BTU – Oasis Air Cleaner Services LLC</title>
+<link rel="icon" href="data:;base64,=">
+<style>
+  :root { --bg:#0f1221; --card:#171a2e; --text:#e9ecf1; --muted:#a9b0c4; --accent:#37b3ff; --accent-2:#00d6a3; --danger:#ff5a7a; --border:#262a42; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,Noto Sans;background:linear-gradient(180deg,#0b0e1a 0%,#0f1221 60%,#0b0e1a 100%);color:var(--text)}
+  header{padding:20px 16px 6px;text-align:center}
+  header .brand{font-weight:800;letter-spacing:.3px;font-size:18px;color:var(--muted)}
+  header h1{margin:6px 0 0;font-size:24px;line-height:1.2}
+  .container{max-width:980px;margin:16px auto 32px;padding:0 16px}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;box-shadow:0 10px 25px rgba(0,0,0,.25)}
+  .grid{display:grid;grid-template-columns:1fr;gap:12px}
+  @media (min-width:720px){.grid.two{grid-template-columns:repeat(2,1fr)}.grid.three{grid-template-columns:repeat(3,1fr)}}
+  label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+  input,select{width:100%;background:#111428;color:var(--text);border:1px solid var(--border);border-radius:12px;padding:12px 14px;font-size:16px;outline:none}
+  input:focus,select:focus{border-color:var(--accent)}
+  .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+  button{border:0;border-radius:12px;padding:12px 14px;font-size:16px;font-weight:700;cursor:pointer;transition:transform .04s ease-in-out,filter .15s ease}
+  button:active{transform:translateY(1px)}
+  .primary{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#0a0d18}
+  .ghost{background:transparent;color:var(--text);border:1px solid var(--border)}
+  .result{background:#101329;border:1px dashed var(--border);border-radius:12px;padding:14px;margin-top:12px}
+  .result h2{margin:0 0 2px;font-size:22px}
+  .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(55,179,255,.15);color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.2px}
+  .note{background:#0f132a;border:1px solid var(--border);border-radius:10px;padding:12px;margin-top:12px;font-size:13px;color:var(--muted)}
+  footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
+  .badge{background:#17213a;border:1px solid var(--border);padding:4px 8px;border-radius:999px;font-size:12px;color:var(--muted)}
+  .kicker{display:inline-flex;align-items:center;gap:8px;color:var(--muted);font-size:12px;margin-bottom:8px}
+  .hint{font-size:12px;color:var(--muted);margin-top:6px}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">Oasis Air Cleaner Services LLC</div>
+  <h1>Calculadora de BTU</h1>
+</header>
+
+<div class="container">
+  <div class="card">
+    <div class="kicker">Modo de cálculo</div>
+    <div class="actions">
+      <button class="ghost" id="modoRapidoBtn">Rápido (área)</button>
+      <button class="ghost" id="modoAvanzadoBtn">Avanzado (con ajustes)</button>
+      <span class="badge">Clima: Puerto Rico</span>
+    </div>
+    <div class="hint">Estimador en BTU/h. Verifique en campo para selección final.</div>
+  </div>
+
+  <div class="card" id="formRapido">
+    <h2 style="margin:0 0 10px;">Cálculo Rápido</h2>
+    <div class="grid two">
+      <div><label>Ancho (ft)</label><input type="number" id="ancho" min="0" step="0.1" placeholder="Ej. 10" /></div>
+      <div><label>Largo (ft)</label><input type="number" id="largo" min="0" step="0.1" placeholder="Ej. 12" /></div>
+    </div>
+    <div class="grid two" style="margin-top:8px;">
+      <div><label>Altura (ft)</label><input type="number" id="altura" min="6" step="0.1" value="8" /></div>
+      <div><label>Exposición solar</label>
+        <select id="sol">
+          <option value="media" selected>Media</option>
+          <option value="baja">Baja / Sombreado</option>
+          <option value="alta">Alta / Mucho sol</option>
+        </select>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="primary" id="calcularRapido">Calcular</button>
+      <button class="ghost" id="limpiarRapido">Limpiar</button>
+    </div>
+    <div class="result" id="resultadoRapido" hidden>
+      <h2><span class="pill">Resultado</span></h2>
+      <div id="textoRapido" style="font-size:18px;margin-top:6px;"></div>
+    </div>
+  </div>
+
+  <div class="card" id="formAvanzado" hidden>
+    <h2 style="margin:0 0 10px;">Cálculo Avanzado</h2>
+    <div class="grid two">
+      <div><label>Ancho (ft)</label><input type="number" id="anchoA" min="0" step="0.1" placeholder="Ej. 10" /></div>
+      <div><label>Largo (ft)</label><input type="number" id="largoA" min="0" step="0.1" placeholder="Ej. 12" /></div>
+    </div>
+    <div class="grid three" style="margin-top:8px;">
+      <div><label>Altura (ft)</label><input type="number" id="alturaA" min="6" step="0.1" value="8" /></div>
+      <div><label>Aislamiento</label>
+        <select id="aislamiento">
+          <option value="bueno">Bueno</option>
+          <option value="regular" selected>Regular</option>
+          <option value="pobre">Pobre</option>
+        </select>
+      </div>
+      <div><label>Exposición solar</label>
+        <select id="solA">
+          <option value="media" selected>Media</option>
+          <option value="baja">Baja / Sombreado</option>
+          <option value="alta">Alta / Mucho sol</option>
+        </select>
+      </div>
+    </div>
+    <div class="grid three" style="margin-top:8px;">
+      <div><label>Ocupantes</label><input type="number" id="ocupantes" min="0" step="1" value="1" /></div>
+      <div><label>¿Cocina?</label>
+        <select id="cocina"><option value="no" selected>No</option><option value="si">Sí</option></select>
+      </div>
+      <div><label>Electrónicos (W)</label><input type="number" id="watts" min="0" step="10" placeholder="Ej. 500" /></div>
+    </div>
+    <div class="grid two" style="margin-top:8px;">
+      <div><label>Ventanas (ft²)</label><input type="number" id="ventanas" min="0" step="0.1" placeholder="Ej. 15" /></div>
+      <div><label>Puertas exteriores</label><input type="number" id="puertas" min="0" step="1" value="0" /></div>
+    </div>
+    <div class="actions">
+      <button class="primary" id="calcularAvanzado">Calcular</button>
+      <button class="ghost" id="limpiarAvanzado">Limpiar</button>
+    </div>
+    <div class="result" id="resultadoAvanzado" hidden>
+      <h2><span class="pill">Resultado</span></h2>
+      <div id="textoAvanzado" style="font-size:18px;margin-top:6px;"></div>
+    </div>
+    <div class="note">
+      Fórmulas (reglas prácticas PR): Base = área(ft²) × 25 BTU × (altura/8). Aislamiento bueno −10%, pobre +10%. Sol baja −10%, alta +10%.
+      +600 BTU por persona adicional a 2, +4000 BTU si cocina, electrónicos = W × 3.412 BTU, ventanas 70/100/150 BTU/ft² (baja/media/alta),
+      +500 BTU por puerta.
+    </div>
+  </div>
+</div>
+
+<footer>© <span id="year"></span> Oasis Air Cleaner Services LLC · 787-664-3079 · oasisservicespr.com</footer>
+
+<script>
+  const $ = (s)=>document.querySelector(s);
+  const fmt = (n)=> n.toLocaleString('es-PR');
+  const R = $("#formRapido"), A = $("#formAvanzado");
+  $("#modoRapidoBtn").addEventListener("click", ()=>{R.hidden=false;A.hidden=true; window.scrollTo({top:R.offsetTop-20,behavior:'smooth'})});
+  $("#modoAvanzadoBtn").addEventListener("click", ()=>{R.hidden=true;A.hidden=false; window.scrollTo({top:A.offsetTop-20,behavior:'smooth'})});
+
+  $("#calcularRapido").addEventListener("click", ()=>{
+    const w=+($("#ancho").value||0), l=+($("#largo").value||0), h=+($("#altura").value||8), sol=$("#sol").value;
+    const area=Math.max(0,w*l); let b=area*25*(h/8);
+    if(sol==='baja') b*=0.9; if(sol==='alta') b*=1.1;
+    const bt=Math.round(b);
+    $("#resultadoRapido").hidden=false; $("#textoRapido").innerHTML=`Área: <b>${fmt(area)}</b> ft² · Estimado: <b>${fmt(bt)}</b> BTU/h`;
+    sugerir(bt);
+  });
+  $("#limpiarRapido").addEventListener("click", ()=>{
+    ["#ancho","#largo"].forEach(i=>$(i).value=""); $("#altura").value=8; $("#sol").value="media"; $("#resultadoRapido").hidden=true; $("#sugerencia")?.remove();
+  });
+
+  $("#calcularAvanzado").addEventListener("click", ()=>{
+    const w=+($("#anchoA").value||0), l=+($("#largoA").value||0), h=+($("#alturaA").value||8);
+    const aisl=$("#aislamiento").value, sol=$("#solA").value, occ=Math.max(0,parseInt($("#ocupantes").value||0));
+    const cocina=$("#cocina").value==="si", watts=Math.max(0, +($("#watts").value||0));
+    const winFt2=Math.max(0, +($("#ventanas").value||0)), puertas=Math.max(0, parseInt($("#puertas").value||0));
+    const area=Math.max(0,w*l);
+    let btu=area*25*(h/8);
+    if(aisl==='bueno') btu*=0.9; if(aisl==='pobre') btu*=1.1;
+    if(sol==='baja') btu*=0.9; if(sol==='alta') btu*=1.1;
+    const extra=Math.max(0,occ-2); btu+=extra*600;
+    if(cocina) btu+=4000;
+    btu+=watts*3.412;
+    const wf= sol==='alta'?150: (sol==='baja'?70:100);
+    btu+=winFt2*wf;
+    btu+=puertas*500;
+    btu=Math.round(btu);
+    $("#resultadoAvanzado").hidden=false; $("#textoAvanzado").innerHTML=`Área: <b>${fmt(area)}</b> ft² · Estimado: <b>${fmt(btu)}</b> BTU/h`;
+    sugerir(btu);
+  });
+  $("#limpiarAvanzado").addEventListener("click", ()=>{
+    ["#anchoA","#largoA","#watts","#ventanas"].forEach(i=>$(i).value="");
+    $("#alturaA").value=8; $("#aislamiento").value="regular"; $("#solA").value="media"; $("#ocupantes").value=1; $("#cocina").value="no"; $("#puertas").value=0;
+    $("#resultadoAvanzado").hidden=true; $("#sugerencia")?.remove();
+  });
+
+  function sugerir(btu){
+    let s=document.querySelector("#sugerencia");
+    if(!s){
+      s=document.createElement("div"); s.id="sugerencia"; s.className="result";
+      document.querySelector(".container").insertBefore(s, document.querySelectorAll(".container .card")[document.querySelectorAll('.container .card').length-1]);
+    }
+    const rango=[6000,9000,12000,18000,24000,30000,36000,48000,60000];
+    const names=["6,000 BTU (1/2 Ton)","9,000 BTU (3/4 Ton)","12,000 BTU (1 Ton)","18,000 BTU (1.5 Ton)","24,000 BTU (2 Ton)","30,000 BTU (2.5 Ton)","36,000 BTU (3 Ton)","48,000 BTU (4 Ton)","60,000 BTU (5 Ton)"];
+    let i=0; while(i<rango.length && btu>rango[i]) i++;
+    const name = names[Math.min(i, names.length-1)];
+    s.hidden=false; s.innerHTML = `<div><b>BTU estimado:</b> ${fmt(btu)} BTU/h</div><div style="margin-top:6px;"><b>Capacidad sugerida:</b> ${name}</div><div class="hint">Verificación técnica recomendada.</div>`;
+  }
+
+  document.getElementById("year").textContent = new Date().getFullYear();
+</script>
+</body>
+</html>
